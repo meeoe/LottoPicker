@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>로또 번호 생성기</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Noto Sans KR", "Segoe UI", sans-serif;
+        background: #ea3b5a;
+        min-height: 100vh;
+        color: #111;
+        padding: 32px 16px 48px;
+      }
+
+      /* 카드 공통 */
+      .card {
+        background: #fff;
+        border-radius: 16px;
+        max-width: 680px;
+        margin: 0 auto;
+        overflow: hidden;
+      }
+
+      .result-card {
+        margin-top: 16px;
+      }
+
+      /* 섹션 */
+      .section {
+        padding: 24px;
+      }
+
+      /* 섹션 구분선 */
+      .divider {
+        border: none;
+        border-top: 1px solid #e4e6ea;
+      }
+
+      /* 타이틀 */
+      h1 {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+        color: #111;
+      }
+
+      h1 span {
+        color: #ea3b5a;
+      }
+
+      .section-title {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #666;
+      }
+
+      /* 세트 수 셀렉박스 — 레이블 + 우측 select */
+      .set-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+      }
+
+      .set-select {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 140px;
+        flex-shrink: 0;
+        padding: 10px 36px 10px 14px;
+        border: 1px solid #e4e6ea;
+        border-radius: 8px;
+        background: #f7f7f7
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")
+          no-repeat right 12px center;
+        color: #111;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+
+      .set-select:focus {
+        outline: none;
+        border-color: #ea3b5a;
+      }
+
+      /* 탭 */
+      .tab-bar {
+        display: flex;
+        gap: 4px;
+        background: #f2f2f2;
+        border-radius: 12px;
+        padding: 5px;
+        margin: 16px 24px;
+      }
+
+      .tab {
+        flex: 1;
+        padding: 10px 0;
+        border: none;
+        background: none;
+        font-family: inherit;
+        font-size: 16px;
+        font-weight: 600;
+        color: #999;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.2s;
+      }
+
+      .tab.active {
+        background: #fff;
+        color: #111;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, 0.12);
+      }
+
+      /* 고정 번호 패널 */
+      .fixed-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 14px;
+      }
+
+      .fixed-info {
+        font-size: 16px;
+        color: #666;
+      }
+
+      .fixed-info span {
+        color: #ea3b5a;
+        font-weight: 700;
+      }
+
+      .reset-btn {
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        color: #888;
+        background: none;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 4px 10px;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .reset-btn:hover {
+        color: #ea3b5a;
+        border-color: #ea3b5a;
+      }
+
+      .number-grid {
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        gap: 6px;
+      }
+
+      @media (max-width: 480px) {
+        .number-grid {
+          grid-template-columns: repeat(7, 1fr);
+        }
+      }
+
+      .num-btn {
+        aspect-ratio: 1;
+        border-radius: 50%;
+        border: none;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+      }
+
+      .num-btn:hover {
+        transform: scale(1.12);
+      }
+
+      .num-btn.fixed-selected {
+        box-shadow:
+          0 0 0 5px #444,
+          0 0 8px rgba(0, 0, 0, 0.3);
+        transform: scale(0.8);
+      }
+
+      /* 공 색상 (동행복권 공식) */
+      .c1 {
+        background: #f3c00f;
+        color: #fff;
+      }
+      .c11 {
+        background: #45aaf2;
+        color: #fff;
+      }
+      .c21 {
+        background: #d8314f;
+        color: #fff;
+      }
+      .c31 {
+        background: #10b9b2;
+        color: #fff;
+      }
+      .c41 {
+        background: #9195a4;
+        color: #fff;
+      }
+
+      /* 생성 버튼 */
+      .generate-btn {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(90deg, #ea3b5a, #c42e4a);
+        color: #fff;
+        font-family: inherit;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 16px rgba(234, 59, 90, 0.3);
+      }
+
+      .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(234, 59, 90, 0.45);
+      }
+
+      .generate-btn:active {
+        transform: translateY(0);
+      }
+
+      /* 결과 카드 헤더 */
+      .result-card-title {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: #666;
+      }
+
+      /* 결과 세트 */
+      .result-set {
+        padding: 18px 24px;
+        border-top: 1px solid #e4e6ea;
+        animation: fadeIn 0.3s ease both;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* 세트 라벨 — 뱃지 스타일 */
+      .set-label {
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        color: #ea3b5a;
+        background: rgba(234, 59, 90, 0.08);
+        border: 1px solid rgba(234, 59, 90, 0.2);
+        border-radius: 20px;
+        padding: 3px 10px;
+        margin-bottom: 12px;
+      }
+
+      .balls {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .ball {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 800;
+        flex-shrink: 0;
+        position: relative;
+      }
+
+      .ball.is-fixed::after {
+        content: "★";
+        position: absolute;
+        top: -6px;
+        right: -4px;
+        font-size: 0.6rem;
+        background: #ea3b5a;
+        color: #fff;
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+      }
+
+      .ball-shine {
+        position: absolute;
+        top: 6px;
+        left: 10px;
+        width: 14px;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.35);
+        border-radius: 50%;
+        transform: rotate(-30deg);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 메인 카드 -->
+    <div class="card">
+      <!-- 타이틀 -->
+      <div class="section">
+        <h1><span>로또</span> 번호 생성기</h1>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- 세트 수 -->
+      <div class="section">
+        <div class="set-row">
+          <p class="section-title">생성할 세트 수</p>
+          <select class="set-select" id="setSelect">
+            <option value="1">1세트</option>
+            <option value="2">2세트</option>
+            <option value="3">3세트</option>
+            <option value="4">4세트</option>
+            <option value="5">5세트</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 탭 바 -->
+      <div class="tab-bar">
+        <button
+          class="tab active"
+          id="tab-random"
+          onclick="switchTab('random')"
+        >
+          랜덤번호
+        </button>
+        <button class="tab" id="tab-fixed" onclick="switchTab('fixed')">
+          고정번호 설정
+        </button>
+      </div>
+
+      <!-- 고정번호 패널 (고정번호 설정 탭 활성 시에만 표시) -->
+      <div id="fixed-panel" style="display: none">
+        <div class="section">
+          <div class="fixed-panel-header">
+            <p class="fixed-info">
+              <span id="fixedCount">0</span> / 5개 선택됨
+            </p>
+            <button class="reset-btn" onclick="resetFixed()">전체 해제</button>
+          </div>
+          <div class="number-grid" id="numberGrid"></div>
+        </div>
+      </div>
+
+      <hr class="divider" />
+
+      <!-- 생성 버튼 -->
+      <div class="section">
+        <button class="generate-btn" onclick="generate()">번호 생성하기</button>
+      </div>
+    </div>
+
+    <!-- 결과 카드 (동적 생성) -->
+    <div id="resultCard"></div>
+
+    <script>
+      const fixedNumbers = new Set();
+
+      function ballClass(n) {
+        if (n <= 10) return "c1";
+        if (n <= 20) return "c11";
+        if (n <= 30) return "c21";
+        if (n <= 40) return "c31";
+        return "c41";
+      }
+
+      // 번호 그리드 렌더
+      const grid = document.getElementById("numberGrid");
+      for (let n = 1; n <= 45; n++) {
+        const btn = document.createElement("button");
+        btn.className = `num-btn ${ballClass(n)}`;
+        btn.textContent = n;
+        btn.dataset.n = n;
+        btn.onclick = () => toggleFixed(n, btn);
+        grid.appendChild(btn);
+      }
+
+      function switchTab(tab) {
+        const isFixed = tab === "fixed";
+        document
+          .getElementById("tab-random")
+          .classList.toggle("active", !isFixed);
+        document
+          .getElementById("tab-fixed")
+          .classList.toggle("active", isFixed);
+        document.getElementById("fixed-panel").style.display = isFixed
+          ? "block"
+          : "none";
+        resetFixed();
+      }
+
+      function updateFixedUI() {
+        document.getElementById("fixedCount").textContent = fixedNumbers.size;
+      }
+
+      function resetFixed() {
+        fixedNumbers.clear();
+        document.querySelectorAll(".num-btn.fixed-selected").forEach((b) => {
+          b.classList.remove("fixed-selected");
+        });
+        updateFixedUI();
+      }
+
+      function toggleFixed(n, btn) {
+        if (fixedNumbers.has(n)) {
+          fixedNumbers.delete(n);
+          btn.classList.remove("fixed-selected");
+        } else {
+          if (fixedNumbers.size >= 5) {
+            alert("고정 번호는 최대 5개까지 선택할 수 있습니다.");
+            return;
+          }
+          fixedNumbers.add(n);
+          btn.classList.add("fixed-selected");
+        }
+        updateFixedUI();
+      }
+
+      function shuffle(arr) {
+        for (let i = arr.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+      }
+
+      function generateSet() {
+        const fixed = [...fixedNumbers];
+        const pool = [];
+        for (let i = 1; i <= 45; i++) {
+          if (!fixedNumbers.has(i)) pool.push(i);
+        }
+        shuffle(pool);
+        const picked = pool.slice(0, 6 - fixed.length);
+        return [...fixed, ...picked].sort((a, b) => a - b);
+      }
+
+      function generate() {
+        const setCount = parseInt(document.getElementById("setSelect").value);
+        const cardEl = document.getElementById("resultCard");
+
+        cardEl.innerHTML = "";
+
+        const card = document.createElement("div");
+        card.className = "card result-card";
+
+        const header = document.createElement("div");
+        header.className = "section";
+        header.innerHTML = `<p class="result-card-title">생성 결과</p>`;
+        card.appendChild(header);
+
+        for (let s = 1; s <= setCount; s++) {
+          const numbers = generateSet();
+          const setEl = document.createElement("div");
+          setEl.className = "result-set";
+          setEl.style.animationDelay = `${(s - 1) * 0.07}s`;
+
+          const label = document.createElement("div");
+          label.className = "set-label";
+          label.textContent = `세트 ${s}`;
+          setEl.appendChild(label);
+
+          const balls = document.createElement("div");
+          balls.className = "balls";
+
+          numbers.forEach((n) => {
+            const ball = document.createElement("div");
+            ball.className = `ball ${ballClass(n)}${fixedNumbers.has(n) ? " is-fixed" : ""}`;
+            ball.innerHTML = `<div class="ball-shine"></div>${n}`;
+            balls.appendChild(ball);
+          });
+
+          setEl.appendChild(balls);
+          card.appendChild(setEl);
+        }
+
+        cardEl.appendChild(card);
+      }
+    </script>
+  </body>
+</html>
