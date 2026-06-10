@@ -3,11 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>로또 번호 생성기</title>
+    <title>Lotto Picker</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800&family=Righteous&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
@@ -17,7 +17,7 @@
     <div class="card">
       <!-- 타이틀 -->
       <div class="section">
-        <h1><span>로또</span> 번호 생성기</h1>
+        <h1><span>Lotto</span> Picker</h1>
       </div>
 
       <hr class="divider" />
@@ -52,15 +52,27 @@
             고정번호 외 나머지를 어떻게 뽑을지 선택하세요.
           </p>
           <div class="mode-bar">
-            <button class="mode-btn active" data-mode="random" onclick="setDrawMode('random')">
+            <button
+              class="mode-btn active"
+              data-mode="random"
+              onclick="setDrawMode('random')"
+            >
               완전 랜덤
               <span class="mode-desc">1~45 균등 추첨</span>
             </button>
-            <button class="mode-btn" data-mode="weighted" onclick="setDrawMode('weighted')">
+            <button
+              class="mode-btn"
+              data-mode="weighted"
+              onclick="setDrawMode('weighted')"
+            >
               인기번호 가중치
               <span class="mode-desc">자주 나온 번호 우선</span>
             </button>
-            <button class="mode-btn" data-mode="toppool" onclick="setDrawMode('toppool')">
+            <button
+              class="mode-btn"
+              data-mode="toppool"
+              onclick="setDrawMode('toppool')"
+            >
               상위 20개 풀
               <span class="mode-desc">TOP 20 안에서만</span>
             </button>
@@ -87,15 +99,27 @@
             선택한 방식은 모든 탭에서 번호 생성 시 적용됩니다.
           </p>
           <div class="mode-bar">
-            <button class="mode-btn active" data-mode="random" onclick="setDrawMode('random')">
+            <button
+              class="mode-btn active"
+              data-mode="random"
+              onclick="setDrawMode('random')"
+            >
               완전 랜덤
               <span class="mode-desc">1~45 균등 추첨</span>
             </button>
-            <button class="mode-btn" data-mode="weighted" onclick="setDrawMode('weighted')">
+            <button
+              class="mode-btn"
+              data-mode="weighted"
+              onclick="setDrawMode('weighted')"
+            >
               인기번호 가중치
               <span class="mode-desc">자주 나온 번호 우선</span>
             </button>
-            <button class="mode-btn" data-mode="toppool" onclick="setDrawMode('toppool')">
+            <button
+              class="mode-btn"
+              data-mode="toppool"
+              onclick="setDrawMode('toppool')"
+            >
               상위 20개 풀
               <span class="mode-desc">TOP 20 안에서만</span>
             </button>
@@ -107,7 +131,7 @@
 
       <!-- 세트 수 + 생성 버튼 -->
       <div class="section">
-        <div class="set-row" style="margin-bottom: 1.4rem;">
+        <div class="set-row" style="margin-bottom: 1.4rem">
           <p class="section-title">생성할 세트 수</p>
           <select class="set-select" id="setSelect">
             <option value="1">1세트</option>
@@ -123,7 +147,11 @@
             <span class="filter-desc">합계 100~175 · 홀짝 균형</span>
           </span>
           <label class="toggle-switch">
-            <input type="checkbox" id="statFilter" onchange="setStatFilter(this.checked)" />
+            <input
+              type="checkbox"
+              id="statFilter"
+              onchange="setStatFilter(this.checked)"
+            />
             <span class="toggle-slider"></span>
           </label>
         </div>
